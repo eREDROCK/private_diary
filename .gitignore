@@ -1,2 +1,6 @@
 *.pyc
 git_token.txt.txt
+<<<<<<< HEAD
+=======
+*.pyc
+>>>>>>> parent of b05eba4 (aaa)
