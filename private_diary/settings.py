@@ -131,7 +131,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-#ロギング設定ですぜ
+#ロギング設定
 LOGGING={
     "version": 1, #1固定
     "disable_existing_loggers": False,
@@ -171,3 +171,5 @@ LOGGING={
         },
     }
 }
+
+EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
