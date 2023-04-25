@@ -149,12 +149,12 @@ AUTHENTICATION_BACKENDS={
 }
 
 #メールアドレス認証に変更する設定
-ACCOUNT_AUTHENTICATION_METHOD='email'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_USERNAME_REQUIRED=False
 
 #サインアップにメールアドレス確認をはさむよう設定
-ACCOUNT_EMAIL_VERIFICATION='mandatory'
-ACCOUNT_EMAIL_RUQUIRED=True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # メールの確認方法
+ACCOUNT_EMAIL_REQUIRED = True  # メールアドレスが必要かどうか
 
 #ログイン/ログアウト後の遷移先を設定
 LOGIN_REDIRECT_URL='diary:index'
