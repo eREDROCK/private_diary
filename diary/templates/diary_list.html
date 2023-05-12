@@ -52,7 +52,19 @@
           <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
           {% else %}
           <li class="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+        <!--次のページへのリンク-->
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+        {% endif %}
       </ul>
+      {% endif %}
     </div>
   </div>
 </div>
