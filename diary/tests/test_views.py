@@ -10,12 +10,12 @@ class LoggedInTestCase(TestCase):
         self.password='1204noShiru'
 
         self.test_user=get_user_model().objects.create_user(
-            username='eREDROCK',
+            username='REDROCK',
             email='rdrc136@gmail.com',
-            password='self.password'
+            password='1204noShiru'
         )
 
-        self.client.login(email=self.test_useremail, password=self.password)
+        self.client.login(email=self.test_user.email, password=self.password)
 
 class TestDiaryCreateView(LoggedInTestCase):
     def test_create_diary_success(self):

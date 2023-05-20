@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views import generic
 from django.shortcuts import render
-from.forms import InquiryForm, DiaryCreateForm
+from .forms import InquiryForm, DiaryCreateForm
 from django.contrib import messages
 from .models import Diary
 from django.shortcuts import get_object_or_404
@@ -89,7 +89,7 @@ class DiaryUpdateView(LoginRequiredMixin, generic.UpdateView, OnlyYouMixin):
 class DiaryDeleteView(LoginRequiredMixin, generic.DeleteView, OnlyYouMixin):
   model=Diary
   template_name='diary_delete.html'
-  seccess_url=reverse_lazy('diary:diary_list')
+  success_url=reverse_lazy('diary:diary_list')
 
   def delete(self, request, *args, **kwargs):
     messages.success(self.request, "日記を削除しました。")
