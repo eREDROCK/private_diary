@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
+import environ
 from pathlib import Path
 
 from django.contrib.messages import constants as messages
@@ -23,6 +24,7 @@ STATICFILES_DIRS=(
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+
 
 
 # Application definition
@@ -79,16 +81,47 @@ WSGI_APPLICATION = "private_diary.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "private_diary",
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": "",
-        "PORT": "",
+if os.environ.get('GAE_APPLICATION', None):
+    # 本番環境（GCP）
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            "NAME": "private_diary",
+            "USER": os.environ.get("DB_USER"),
+            "PASSWORD": os.environ.get("DB_PASSWORD"),
+            'HOST': '/cloudsql/redrockdiary:us-central1:diarybase',
+        }
     }
-}
+else:
+    # 開発環境
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            "NAME": "private_diary",
+            "USER": 'eredrock',
+            "PASSWORD": '1204noShiru',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+        }
+    }
+
+
+#CSRF設定
+from urllib.parse import urlparse
+env = environ.Env(DEBUG=(bool, False))
+
+APPENGINE_URL = env("APPENGINE_URL", default=None)
+if APPENGINE_URL:
+    # Ensure a scheme is present in the URL before it's processed.
+    if not urlparse(APPENGINE_URL).scheme:
+        APPENGINE_URL = f"https://{APPENGINE_URL}"
+
+    ALLOWED_HOSTS = [urlparse(APPENGINE_URL).netloc]
+    CSRF_TRUSTED_ORIGINS = [APPENGINE_URL]
+    SECURE_SSL_REDIRECT = True
+else:
+    ALLOWED_HOSTS = ["*"]
+
 
 AUTH_USER_MODEL='accounts.CustomUser'
 
@@ -140,6 +173,15 @@ MESSAGE_TAGS={
     messages.INFO: 'alert alert-info',
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # メールサーバーのホスト名
+EMAIL_PORT = 587  # メールサーバーのポート番号
+EMAIL_USE_TLS = True  # TLSを使用する場合はTrueに設定
+EMAIL_HOST_USER = os.environ.get('FROM_EMAIL')  # メールアカウントのユーザー名
+EMAIL_HOST_PASSWORD =  os.environ.get('FROM_EMAIL_PASS')# メールアカウントのパスワード
+DEFAULT_FROM_EMAIL=os.environ.get('FROM_EMAIL') #デフォルトのメール送信元を設定
+
+
 #django-allauthで利用するdjango.contrib.sitesを使うためにサイト識別用IDを設定
 SITE_ID=1 
 
@@ -166,8 +208,6 @@ ACCOUNT_LOGOUT_ON_GET=True
 #django-allauthが送信するメールの件名に自動付与される接頭辞をブランクにする設定
 ACCOUNT_EMAIL_SUBJECT_PREFIX=''
 
-#デフォルトのメール送信元を設定
-DEFAULT_FROM_EMAIL=os.environ.get('FROM_EMAIL')
 
 MEDIA_URL='/media/'
 
@@ -177,3 +217,13 @@ LOGIN_REDIRECT_URL='diary:diary_list'
 #バックアップバッチ用
 BACKUP_PATH='backup/'
 NUM_SAVED_BACKUP=30
+
+# セッションストレージを有効にするための設定
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # データベースベースセッションバックエンド
+
+# セッションに使用するクッキー名を指定（任意）
+SESSION_COOKIE_NAME = 'redrock_session_cookie'
+
+# セッションの有効期限を設定（任意）
+# デフォルトでは、ブラウザを閉じるとセッションが破棄されます。
+SESSION_COOKIE_AGE = 1209600  # 2週間（秒単位）
